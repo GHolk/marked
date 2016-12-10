@@ -1,15 +1,20 @@
 # marked
 
-> A full-featured markdown parser and compiler, written in JavaScript. Built
-> for speed.
+> A full-featured markdown parser and compiler, 
+> written in JavaScript. Built for speed.
 
-[![NPM version](https://badge.fury.io/js/marked.png)][badge]
+fork from <https://github.com/chjj/marked> , 
+add some feature i use. 
 
-## Install
 
-``` bash
-npm install marked --save
-```
+## CHANGE
+
+  - **underline**: `_some_under_line_` cause <u>some under line</u> , 
+    but underline not cause **strong** or *em* any more. 
+  - **cite**: `~cite~from~book~` cause <cite>cite from book</cite> .
+  - **del**: `-del-some-text-` cause <s>del some text</s>  .
+
+
 
 ## Usage
 
