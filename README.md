@@ -7,13 +7,14 @@ fork from <https://github.com/chjj/marked> ,
 add some feature i use. 
 
 
-## CHANGE
+## Change
 
-  - **underline**: `_some_under_line_` cause <u>some under line</u> , 
+  - underline: `_some_under_line_` cause <u>some under line</u> , 
     but underline not cause **strong** or *em* any more. 
-  - **cite**: `~cite~from~book~` cause <cite>cite from book</cite> .
-  - **del**: `-del-some-text-` cause <s>del some text</s>  .
-
+  - cite: `~cite~from~book~` cause <cite>cite from book</cite> .
+  - strike: `-strike-some-text-` cause <s>strike some text</s>  .
+  - wiki: `[[markdown|light weight markup language]] cause 
+    `<a href="http://zh.wikipedia.org/wiki/markdown">light weight markup language</a>`
 
 
 ## Usage
