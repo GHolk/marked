@@ -1,0 +1,15 @@
+*this encode*
+**this encode**
+
+a ** b this does not encode c ** c
+a * b this would not encode c * d
+
+_a b_ _c_ _d_e_f_
+a_c d_e
+
+-a b- -c- -d-e-f-
+a-c d-e
+
+~a b~ ~c~ ~d~e~f~
+a~c d~e
+
