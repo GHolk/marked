@@ -1,0 +1,15 @@
+relative path need contain a
+`/` inside `<>`, but not first.
+<marked/README.md>
+<./marked/README.md>
+<../marked/README.md>
+
+this only cause end tag
+</hello-world.lsp>
+
+this work
+</./hello-world.js>
+
+but this is accepted, cause same protocol url
+<//cdnjs.org/jquery.js>
+

@@ -1,0 +1,12 @@
+<p>relative path need contain a
+<code>/</code> inside <code>&lt;&gt;</code>, but not first.</p>
+<p><a href="marked/README.md">marked/README.md</a>
+<a href="./marked/README.md">./marked/README.md</a>
+<a href="../marked/README.md">../marked/README.md</a></p>
+<p>this only cause end tag
+</hello-world.lsp></p>
+<p>this work
+<a href="/./hello-world.js">/./hello-world.js</a></p>
+<p>but this is accepted, cause same protocol url
+<a href="//cdnjs.org/jquery.js">//cdnjs.org/jquery.js</a></p>
+
