@@ -65,6 +65,17 @@ console.log(marked('I am using __markdown__.'));
 </html>
 ```
 
+## demonstarte
+
+<style>
+  textarea {
+    display: block;
+    width: 100%;
+  }
+</style>
+<textarea></textarea>
+<button>convert</button>
+
 ## marked(markdownString [,options] [,callback])
 
 ### markdownString
