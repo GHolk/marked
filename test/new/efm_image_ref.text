@@ -1,0 +1,6 @@
+allow square bracket as reference name,
+so can has ref for image:
+[![potato server]]
+
+[potato server]: https://imgur.com/S31LVeT.jpg
+[![potato server]]: https://imgur.com/S31LVeT
