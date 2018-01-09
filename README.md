@@ -13,8 +13,10 @@ add some feature i use.
     but underline not cause **strong** or *em* any more. 
   - cite: `~cite~from~book~` cause <cite>cite from book</cite> .
   - strike: `-strike-some-text-` cause <s>strike some text</s>  .
-  - wiki: `[[markdown|light weight markup language]] cause 
-    `<a href="http://zh.wikipedia.org/wiki/markdown">light weight markup language</a>`
+  - wiki:
+    `[[markdown|light weight markup language]]` cause 
+    `<a href="http://zh.wikipedia.org/wiki/markdown">
+    light weight markup language</a>`
 
 
 ## Usage
@@ -45,27 +47,6 @@ marked.setOptions({
 console.log(marked('I am using __markdown__.'));
 ```
 
-### Browser
-
-```html
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <title>Marked in the browser</title>
-  <script src="lib/marked.js"></script>
-</head>
-<body>
-  <div id="content"></div>
-  <script>
-    document.getElementById('content').innerHTML =
-      marked('# Marked in browser\n\nRendered by **marked**.');
-  </script>
-</body>
-</html>
-```
-
-see <http://gholk.github.io/marked> .
 
 
 ## marked(markdownString [,options] [,callback])
@@ -291,6 +272,46 @@ var tokens = lexer.lex(text);
 console.log(tokens);
 console.log(lexer.rules);
 ```
+
+### Browser
+
+```html
+<div id="content"></div>
+<script>
+document.getElementById('content').innerHTML =
+    marked('# Marked in browser\n\nRendered by **marked**.');
+</script>
+```
+
+try it: <http://gholk.github.io/marked#Browser> .
+
+<textarea id="markdown-input"></textarea>
+<button id="convert-markdown">convert</button>
+
+
+<textarea id="html-output"></textarea>
+<div id="html-parent"></div>
+
+<script src="./marked.min.js"></script>
+<script>
+  function getInput() {
+    const area = document.querySelector('textarea#markdown-input')
+    return area.value
+  }
+  function setOutput(rawHtml) {
+    const text = document.querySelector('#html-output')
+    const parentDiv = document.querySelector('#html-parent')
+
+    text.value = rawHtml
+    parentDiv.innerHTML = rawHtml
+  }
+  const convertButton = document.querySelector('#convert-markdown')
+  convertButton.onclick = () => {
+    const markedText = getInput()
+    const markedHtml = marked(markedText)
+    setOutput(markedHtml)
+  }
+</script>
 
 ## CLI
 

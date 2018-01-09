@@ -36,19 +36,218 @@
 </head>
 <body>
 
-<p>  this a fork version of <strong>marked</strong>,
-  add some rule for my use,
-  which i call <em>Escape Flavor Markdown</em>.</p>
+<h1 id="marked">marked</h1>
+<blockquote>
+<p>A full-featured markdown parser and compiler, 
+written in JavaScript. Built for speed.</p>
+</blockquote>
+<p>fork from <a href="https://github.com/chjj/marked">https://github.com/chjj/marked</a> , 
+add some feature i use. </p>
+<h2 id="Change">Change</h2>
+<ul>
+<li>underline: <code>_some_under_line_</code> cause <u>some under line</u> , 
+but underline not cause <strong>strong</strong> or <em>em</em> any more. </li>
+<li>cite: <code>~cite~from~book~</code> cause <cite>cite from book</cite> .</li>
+<li>strike: <code>-strike-some-text-</code> cause <s>strike some text</s>  .</li>
+<li>wiki:
+<code>[[markdown|light weight markup language]]</code> cause 
+<code>&lt;a href=&quot;http://zh.wikipedia.org/wiki/markdown&quot;&gt;
+light weight markup language&lt;/a&gt;</code></li>
+</ul>
+<h2 id="Usage">Usage</h2>
+<p>Minimal usage:</p>
+<pre><code class="lang-js">var marked = require(&#39;marked&#39;);
+console.log(marked(&#39;I am using __markdown__.&#39;));
+// Outputs: &lt;p&gt;I am using &lt;strong&gt;markdown&lt;/strong&gt;.&lt;/p&gt;
+</code></pre>
+<p>Example setting options with default values:</p>
+<pre><code class="lang-js">var marked = require(&#39;marked&#39;);
+marked.setOptions({
+  renderer: new marked.Renderer(),
+  gfm: true,
+  tables: true,
+  breaks: false,
+  pedantic: false,
+  sanitize: false,
+  smartLists: true,
+  smartypants: false
+});
 
-<p>  just type in textarea and click convert,
-  html would output to two below region.</p>
+console.log(marked(&#39;I am using __markdown__.&#39;));
+</code></pre>
+<h2 id="marked(markdownString [,options] [,callback])">marked(markdownString [,options] [,callback])</h2>
+<h3 id="markdownString">markdownString</h3>
+<p>Type: <code>string</code></p>
+<p>String of markdown source to be compiled.</p>
+<h3 id="options">options</h3>
+<p>Type: <code>object</code></p>
+<p>Hash of options. Can also be set using the <code>marked.setOptions</code> method as seen
+above.</p>
+<h3 id="callback">callback</h3>
+<p>Type: <code>function</code></p>
+<p>Function called when the <code>markdownString</code> has been fully parsed when using
+async highlighting. If the <code>options</code> argument is omitted, this can be used as
+the second argument.</p>
+<h2 id="Options">Options</h2>
+<h3 id="highlight">highlight</h3>
+<p>Type: <code>function</code></p>
+<p>A function to highlight code blocks. The first example below uses async highlighting with
+<a href="https://github.com/rvagg/node-pygmentize-bundled">node-pygmentize-bundled</a>, and the second is a synchronous example using
+<a href="https://github.com/isagalaev/highlight.js">highlight.js</a>:</p>
+<pre><code class="lang-js">var marked = require(&#39;marked&#39;);
+
+var markdownString = &#39;```js\n console.log(&quot;hello&quot;); \n```&#39;;
+
+// Async highlighting with pygmentize-bundled
+marked.setOptions({
+  highlight: function (code, lang, callback) {
+    require(&#39;pygmentize-bundled&#39;)({ lang: lang, format: &#39;html&#39; }, code, function (err, result) {
+      callback(err, result.toString());
+    });
+  }
+});
+
+// Using async version of marked
+marked(markdownString, function (err, content) {
+  if (err) throw err;
+  console.log(content);
+});
+
+// Synchronous highlighting with highlight.js
+marked.setOptions({
+  highlight: function (code) {
+    return require(&#39;highlight.js&#39;).highlightAuto(code).value;
+  }
+});
+
+console.log(marked(markdownString));
+</code></pre>
+<h4 id="highlight arguments">highlight arguments</h4>
+<p><code>code</code></p>
+<p>Type: <code>string</code></p>
+<p>The section of code to pass to the highlighter.</p>
+<p><code>lang</code></p>
+<p>Type: <code>string</code></p>
+<p>The programming language specified in the code block.</p>
+<p><code>callback</code></p>
+<p>Type: <code>function</code></p>
+<p>The callback function to call when using an async highlighter.</p>
+<h3 id="renderer">renderer</h3>
+<p>Type: <code>object</code>
+Default: <code>new Renderer()</code></p>
+<p>An object containing functions to render tokens to HTML.</p>
+<h4 id="Overriding renderer methods">Overriding renderer methods</h4>
+<p>The renderer option allows you to render tokens in a custom manner. Here is an
+example of overriding the default heading token rendering by adding an embedded anchor tag like on GitHub:</p>
+<pre><code class="lang-javascript">var marked = require(&#39;marked&#39;);
+var renderer = new marked.Renderer();
+
+renderer.heading = function (text, level) {
+  var escapedText = text.toLowerCase().replace(/[^\w]+/g, &#39;-&#39;);
+
+  return &#39;&lt;h&#39; + level + &#39;&gt;&lt;a name=&quot;&#39; +
+                escapedText +
+                 &#39;&quot; class=&quot;anchor&quot; href=&quot;#&#39; +
+                 escapedText +
+                 &#39;&quot;&gt;&lt;span class=&quot;header-link&quot;&gt;&lt;/span&gt;&lt;/a&gt;&#39; +
+                  text + &#39;&lt;/h&#39; + level + &#39;&gt;&#39;;
+},
+
+console.log(marked(&#39;# heading+&#39;, { renderer: renderer }));
+</code></pre>
+<p>This code will output the following HTML:</p>
+<pre><code class="lang-html">&lt;h1&gt;
+  &lt;a name=&quot;heading-&quot; class=&quot;anchor&quot; href=&quot;#heading-&quot;&gt;
+    &lt;span class=&quot;header-link&quot;&gt;&lt;/span&gt;
+  &lt;/a&gt;
+  heading+
+&lt;/h1&gt;
+</code></pre>
+<h4 id="Block level renderer methods">Block level renderer methods</h4>
+<ul>
+<li>code(*string* code, <em>string</em> language)</li>
+<li>blockquote(*string* quote)</li>
+<li>html(*string* html)</li>
+<li>heading(*string* text, <em>number</em>  level)</li>
+<li>hr()</li>
+<li>list(*string* body, <em>boolean</em> ordered)</li>
+<li>listitem(*string*  text)</li>
+<li>paragraph(*string* text)</li>
+<li>table(*string* header, <em>string</em> body)</li>
+<li>tablerow(*string* content)</li>
+<li>tablecell(*string* content, <em>object</em> flags)</li>
+</ul>
+<p><code>flags</code> has the following properties:</p>
+<pre><code class="lang-js">{
+    header: true || false,
+    align: &#39;center&#39; || &#39;left&#39; || &#39;right&#39;
+}
+</code></pre>
+<h4 id="Inline level renderer methods">Inline level renderer methods</h4>
+<ul>
+<li>strong(*string* text)</li>
+<li>em(*string* text)</li>
+<li>codespan(*string* code)</li>
+<li>br()</li>
+<li>del(*string* text)</li>
+<li>link(*string* href, <em>string</em> title, <em>string</em> text)</li>
+<li>image(*string* href, <em>string</em> title, <em>string</em> text)</li>
+</ul>
+<h3 id="gfm">gfm</h3>
+<p>Type: <code>boolean</code>
+Default: <code>true</code></p>
+<p>Enable <a href="https://help.github.com/articles/github-flavored-markdown">GitHub flavored markdown</a>.</p>
+<h3 id="tables">tables</h3>
+<p>Type: <code>boolean</code>
+Default: <code>true</code></p>
+<p>Enable GFM <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#wiki-tables">tables</a>.
+This option requires the <code>gfm</code> option to be true.</p>
+<h3 id="breaks">breaks</h3>
+<p>Type: <code>boolean</code>
+Default: <code>false</code></p>
+<p>Enable GFM <a href="https://help.github.com/articles/github-flavored-markdown#newlines">line breaks</a>.
+This option requires the <code>gfm</code> option to be true.</p>
+<h3 id="pedantic">pedantic</h3>
+<p>Type: <code>boolean</code>
+Default: <code>false</code></p>
+<p>Conform to obscure parts of <code>markdown.pl</code> as much as possible. Don&#39;t fix any of
+the original markdown bugs or poor behavior.</p>
+<h3 id="sanitize">sanitize</h3>
+<p>Type: <code>boolean</code>
+Default: <code>false</code></p>
+<p>Sanitize the output. Ignore any HTML that has been input.</p>
+<h3 id="smartLists">smartLists</h3>
+<p>Type: <code>boolean</code>
+Default: <code>true</code></p>
+<p>Use smarter list behavior than the original markdown. May eventually be
+default with the old behavior moved into <code>pedantic</code>.</p>
+<h3 id="smartypants">smartypants</h3>
+<p>Type: <code>boolean</code>
+Default: <code>false</code></p>
+<p>Use &quot;smart&quot; typograhic punctuation for things like quotes and dashes.</p>
+<h2 id="Access to lexer and parser">Access to lexer and parser</h2>
+<p>You also have direct access to the lexer and parser if you so desire.</p>
+<pre><code class="lang-js">var tokens = marked.lexer(text, options);
+console.log(marked.parser(tokens));
+</code></pre>
+<pre><code class="lang-js">var lexer = new marked.Lexer(options);
+var tokens = lexer.lex(text);
+console.log(tokens);
+console.log(lexer.rules);
+</code></pre>
+<h3 id="Browser">Browser</h3>
+<pre><code class="lang-html">&lt;div id=&quot;content&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+document.getElementById(&#39;content&#39;).innerHTML =
+    marked(&#39;# Marked in browser\n\nRendered by **marked**.&#39;);
+&lt;/script&gt;
+</code></pre>
+<p>try it: <a href="http://gholk.github.io/marked#Browser">http://gholk.github.io/marked#Browser</a> .</p>
+<p><textarea id="markdown-input"></textarea></p>
+<button id="convert-markdown">convert</button>
 
 
-<textarea id="markdown-input"></textarea>
-<button>convert</button>
-
-
-<textarea id="html-output"></textarea>
+<p><textarea id="html-output"></textarea></p>
 <div id="html-parent"></div>
 
 <script src="./marked.min.js"></script>
@@ -64,13 +263,106 @@
     text.value = rawHtml
     parentDiv.innerHTML = rawHtml
   }
-  const convertButton = document.querySelector('button')
+  const convertButton = document.querySelector('#convert-markdown')
   convertButton.onclick = () => {
     const markedText = getInput()
     const markedHtml = marked(markedText)
     setOutput(markedHtml)
   }
 </script>
+
+<h2 id="CLI">CLI</h2>
+<pre><code class="lang-bash">$ marked -o hello.html
+hello world
+^D
+$ cat hello.html
+&lt;p&gt;hello world&lt;/p&gt;
+</code></pre>
+<h2 id="Philosophy behind marked">Philosophy behind marked</h2>
+<p>The point of marked was to create a markdown compiler where it was possible to
+frequently parse huge chunks of markdown without having to worry about
+caching the compiled output somehow...or blocking for an unnecesarily long time.</p>
+<p>marked is very concise and still implements all markdown features. It is also
+now fully compatible with the client-side.</p>
+<p>marked more or less passes the official markdown test suite in its
+entirety. This is important because a surprising number of markdown compilers
+cannot pass more than a few tests. It was very difficult to get marked as
+compliant as it is. It could have cut corners in several areas for the sake
+of performance, but did not in order to be exactly what you expect in terms
+of a markdown rendering. In fact, this is why marked could be considered at a
+disadvantage in the benchmarks above.</p>
+<p>Along with implementing every markdown feature, marked also implements <a href="http://github.github.com/github-flavored-markdown/">GFM
+features</a>.</p>
+<h2 id="Benchmarks">Benchmarks</h2>
+<p>node v0.8.x</p>
+<pre><code class="lang-bash">$ node test --bench
+marked completed in 3411ms.
+marked (gfm) completed in 3727ms.
+marked (pedantic) completed in 3201ms.
+robotskirt completed in 808ms.
+showdown (reuse converter) completed in 11954ms.
+showdown (new converter) completed in 17774ms.
+markdown-js completed in 17191ms.
+</code></pre>
+<p>__Marked is now faster than Discount, which is written in C.__</p>
+<p>For those feeling skeptical: These benchmarks run the entire markdown test suite 1000 times. The test suite tests every feature. It doesn&#39;t cater to specific aspects.</p>
+<h3 id="Pro level">Pro level</h3>
+<p>You also have direct access to the lexer and parser if you so desire.</p>
+<pre><code class="lang-js">var tokens = marked.lexer(text, options);
+console.log(marked.parser(tokens));
+</code></pre>
+<pre><code class="lang-js">var lexer = new marked.Lexer(options);
+var tokens = lexer.lex(text);
+console.log(tokens);
+console.log(lexer.rules);
+</code></pre>
+<pre><code class="lang-bash">$ node
+&gt; require(&#39;marked&#39;).lexer(&#39;&gt; i am using marked.&#39;)
+[ { type: &#39;blockquote_start&#39; },
+  { type: &#39;paragraph&#39;,
+    text: &#39;i am using marked.&#39; },
+  { type: &#39;blockquote_end&#39; },
+  links: {} ]
+</code></pre>
+<h2 id="Running Tests &amp; Contributing">Running Tests &amp; Contributing</h2>
+<p>If you want to submit a pull request, make sure your changes pass the test
+suite. If you&#39;re adding a new feature, be sure to add your own test.</p>
+<p>The marked test suite is set up slightly strangely: <code>test/new</code> is for all tests
+that are not part of the original markdown.pl test suite (this is where your
+test should go if you make one). <code>test/original</code> is only for the original
+markdown.pl tests. <code>test/tests</code> houses both types of tests after they have been
+combined and moved/generated by running <code>node test --fix</code> or <code>marked --test
+--fix</code>.</p>
+<p>In other words, if you have a test to add, add it to <code>test/new/</code> and then
+regenerate the tests with <code>node test --fix</code>. Commit the result. If your test
+uses a certain feature, for example, maybe it assumes GFM is <em>not</em> enabled, you
+can add <code>.nogfm</code> to the filename. So, <code>my-test.text</code> becomes
+<code>my-test.nogfm.text</code>. You can do this with any marked option. Say you want
+line breaks and smartypants enabled, your filename should be:
+<code>my-test.breaks.smartypants.text</code>.</p>
+<p>To run the tests:</p>
+<pre><code class="lang-bash">cd marked/
+node test
+</code></pre>
+<h3 id="Contribution and License Agreement">Contribution and License Agreement</h3>
+<p>If you contribute code to this project, you are implicitly allowing your code
+to be distributed under the MIT license. You are also implicitly verifying that
+all code is your original work. <code>&lt;/legalese&gt;</code></p>
+<h2 id="License">License</h2>
+<p>Copyright (c) 2011-2014, Christopher Jeffrey. (MIT License)</p>
+<p>See LICENSE for more info.</p>
+
+<p>  this a fork version of <strong>marked</strong>,
+  add some rule for my use,
+  which i call <em>Escape Flavor Markdown</em>.</p>
+
+<p>  just type in textarea and click convert,
+  html would output to two below region.</p>
+
+
+<textarea id="markdown-input"></textarea>
+<button id="convert-markdown">convert</button>
+
 
 </body>
 </html>
