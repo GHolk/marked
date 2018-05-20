@@ -1,3 +1,3 @@
-[hello](javascript:alert('hello'))
+[hello](javascript:alert('hello')) [bye](javascript:alert('bye'))
 
 [greet](javascript:var name=prompt('what is your name?');alert('hello '+name+'!'))
