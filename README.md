@@ -289,7 +289,7 @@ document.getElementById('content').innerHTML =
 </script>
 ```
 
-try it: <http://gholk.github.io/marked#Browser> .
+try it: <http://gholk.github.io/marked#browser> .
 
 <form onsubmit="convertMarkdown(event)">
 <textarea name="markdown-input"></textarea>
