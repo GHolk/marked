@@ -6,6 +6,12 @@
 fork from <https://github.com/chjj/marked> , 
 add some feature i use. 
 
+this a fork version of **marked**,
+add some rule for my use,
+which i call *Escape Flavor Markdown*.
+
+just type in textarea and click convert,
+html would output to two below region.
 
 ## Change
 
@@ -285,30 +291,87 @@ document.getElementById('content').innerHTML =
 
 try it: <http://gholk.github.io/marked#Browser> .
 
-<textarea id="markdown-input"></textarea>
-<button id="convert-markdown">convert</button>
+<form onsubmit="convertMarkdown(event)">
+<textarea name="markdown-input"></textarea>
 
+<input type="submit" value="convert">
 
-<textarea id="html-output"></textarea>
-<div id="html-parent"></div>
+<label>
+<input type="radio" name="output-format" value="html" required disabled>
+html</label>
+<label><input type="radio" name="output-format" value="roff" disabled> 
+man-page</label>
 
-<script src="./marked.min.js"></script>
+<textarea name="html-output"></textarea>
+<div name="html-parent"></div>
+
+</form>
+
+<style>
+  textarea {
+    display: block;
+    width: 100%;
+    height: 10em;
+  }
+  #html-parent:empty {
+    display: none;
+  }
+  #html-parent {
+    border: solid 1px black;
+    padding: 1em;
+  }
+</style>
+
 <script>
+  async function loadModule(url) {
+    const response = await fetch(url, {mode: 'cors'})
+    const js = await response.text()
+    const moduleFunction = new Function(['module', 'exports', 'require'], js)
+    const module = {exports:{}}
+    function require(name) {
+      console.assert(window[name], 'require unknown module %s', name)
+      return window[name]
+    }
+    moduleFunction(module, module.exports, require)
+    return module.exports
+  }
+  void async function () {
+    const marked = await loadModule('https://raw.githubusercontent.com/Gholk/marked/master/lib/marked.js')
+    window.marked = marked
+    const htmlOption = document.querySelector('input[name="output-format"][value="html"]')
+    htmlOption.disabled = false
+    htmlOption.checked = true
+    
+    const markedMan = await loadModule('https://raw.githubusercontent.com/kapouer/marked-man/master/lib/marked-man.js')
+    const roffOption = document.querySelector('input[name="output-format"][value="roff"]')
+    roffOption.disabled = false
+  }()
+
   function getInput() {
-    const area = document.querySelector('textarea#markdown-input')
+    const area = document.querySelector('[name="markdown-input"]')
     return area.value
   }
   function setOutput(rawHtml) {
-    const text = document.querySelector('#html-output')
-    const parentDiv = document.querySelector('#html-parent')
-
+    const text = document.querySelector('[name="html-output"]')
     text.value = rawHtml
-    parentDiv.innerHTML = rawHtml
+
+    const format = document.querySelector('[name="output-format"]:checked').value
+    if (format == 'html') {
+      const parentDiv = document.querySelector('[name="html-parent"]')
+      parentDiv.innerHTML = rawHtml
+    }
   }
-  const convertButton = document.querySelector('#convert-markdown')
-  convertButton.onclick = () => {
+  function convertMarkdown(submit) {
+    submit.preventDefault()
+
     const markedText = getInput()
-    const markedHtml = marked(markedText)
+    const option = {}
+    option.format = document.querySelector('[name="output-format"]:checked').value
+    if (option.format == 'html') {
+      option.efm = true
+      option.gfm = false
+    }
+    const markedHtml = marked(markedText, option)
     setOutput(markedHtml)
   }
 </script>
@@ -434,3 +497,5 @@ See LICENSE for more info.
 [badge]: http://badge.fury.io/js/marked
 [tables]: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#wiki-tables
 [breaks]: https://help.github.com/articles/github-flavored-markdown#newlines
+
+https://raw.githubusercontent.com/kapouer/marked-man/master/lib/marked-man.js
